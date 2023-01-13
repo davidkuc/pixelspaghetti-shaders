@@ -39,20 +39,20 @@ Shader "pixelspaghetti/Circles"
             float _Radius;
 
             // no soften
-            float Circle(float2 pt, float2 center , float radius){
+            float circle(float2 pt, float2 center , float radius){
                 float2 p = pt - center;
                 return 1 - step(radius, length(p));
             }
 
             // softened
-            float Circle(float2 pt, float2 center , float radius, bool soften){
+            float circle(float2 pt, float2 center , float radius, bool soften){
                 float2 p = pt - center;
                 float edge = (soften) ? radius * 0.01 : 0.0;
                 return 1 - smoothstep(radius-edge, radius+edge, length(p));
             }
 
             // not softened
-            float CircleOutline(float2 pt, float2 center , float radius, float line_width){
+            float circleOutline(float2 pt, float2 center , float radius, float line_width){
                 float2 p = pt - center;
                 float len = length(p);
                 float half_line_width = line_width/2;
@@ -60,7 +60,7 @@ Shader "pixelspaghetti/Circles"
             }
 
             // Soften inside only
-            float CircleOutline(float2 pt, float2 center , float radius, float line_width, float edge_thickness){
+            float circleOutline(float2 pt, float2 center , float radius, float line_width, float edge_thickness){
                 float2 p = pt - center;
                 float len = length(p);
                 float half_line_width = line_width/2;
@@ -69,7 +69,7 @@ Shader "pixelspaghetti/Circles"
             }
 
             // filled in circle + outline + soften
-            float CircleWithOutline(float2 pt, float2 center , float radius, float line_width, float edge_thickness, bool soften){
+            float circleWithOutline(float2 pt, float2 center , float radius, float line_width, float edge_thickness, bool soften){
                 float2 p = pt - center;
                 float len = length(p);
                 float half_line_width = line_width/2;
@@ -80,7 +80,7 @@ Shader "pixelspaghetti/Circles"
             }
 
             // outline + soften on both sides
-            float CircleOutline(float2 pt, float2 center , float radius, float line_width, float edge_thickness, bool soften){
+            float circleOutline(float2 pt, float2 center , float radius, float line_width, float edge_thickness, bool soften){
                 float2 p = pt - center;
                 float len = length(p);
                 float half_line_width = line_width/2;
