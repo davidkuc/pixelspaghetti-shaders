@@ -59,8 +59,7 @@ Shader "pixelspaghetti/Lines"
                 fixed3 color = inputColor * checkIfPointIsOnLine(y, lerp(-0.4, 0.4, getDelta(x * UNITY_TWO_PI)) + 0.5, line_width, edge_width); 
                 return fixed4(color, 1);
             }
-
-            
+       
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 pos = i.position.xy * 2;
