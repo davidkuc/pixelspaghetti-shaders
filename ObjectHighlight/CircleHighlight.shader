@@ -1,4 +1,4 @@
-Shader "MyShaders/CircleHighlight"
+Shader "pixelspaghetti/CircleHighlight"
 {
     Properties
     {
