@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TestingProject3D
@@ -6,15 +7,17 @@ namespace TestingProject3D
     public class LavaController : MonoBehaviour
     {
         [SerializeField] Material material;
-        [SerializeField] Light pointLight;
-        int ff = 0;
+        [SerializeField] List<Light> pointLights;
 
-        // Update is called once per frame
         void Update()
         {
-            var timeCos = (Mathf.PingPong(Time.time, 3) + 1) * 0.5f;
+            var timeCos = (Mathf.Clamp(Mathf.PingPong(Time.time, 5) / 5, 0.5f, 1.5f));
             material.SetFloat("_TimeInput", timeCos);
-            pointLight.intensity = timeCos;
+
+            foreach (var item in pointLights)
+            {
+                item.intensity = timeCos;
+            }
         }
     }
 }

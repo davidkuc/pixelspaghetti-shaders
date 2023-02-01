@@ -83,7 +83,7 @@ Shader "pixelspaghetti/LavaFlatMaterial"
             o.Albedo = c.rgb += e.rgb;
 
             //float fadingEmission = _EmissionPower *= cos(_TimeInput * 0.6f) + 1;
-            float fadingEmission = _EmissionPower* _TimeInput;
+            float fadingEmission = _EmissionPower;
 
             o.Emission = e.rgb * fadingEmission;
         }
