@@ -1,32 +1,36 @@
-Shader "pixelspaghetti/Lava"
+// Used on a plane or flat material, has movement + waves
+
+Shader "pixelspaghetti/LavaFlatMaterial"
 {
     Properties
     {
-        _Scale("Scale", Range(0.1, 3)) = 0.3
         [NoScaleOffset] _MainTex("Main Texture", 2D) = "white" {}
+        _TimeInput("Time Input From C#", Float) = 0
+        [Header(Emission)]
         [NoScaleOffset]  _EmissiveMap("Emissive Map", 2D) = "white" {}
         _EmissionPower("Emission Power", Float) = 1
         _EmissionColor("Emission Color", Color) = (1,1,1,1)
-        _TimeMultipler("Time Multipler", Float) = 1
+        [Header(Wave Generation)]
+        _GenerateWaves("Generate Waves", Range(0,1)) = 0
         _DisplacementTex ("Displacement Texture", 2D) = "white" {}
         _MaxDisplacement ("Max Displacement", Float) = 1.0
     }
     SubShader
     {
-        Lighting On
+        // Lighting On
         
-        // From the Original Shader
-        Material
-        {
-            Emission[_EmissionColor]
-        }
+        // // From the Original Shader
+        // Material
+        // {
+        //     Emission[_EmissionColor]
+        // }
         
-        Pass{
-            SetTexture[_MainTex]{ combine texture }
-            SetTexture[_EmissiveMap]{ combine primary lerp(texture) previous }
-        }
+        // Pass{
+        //     SetTexture[_MainTex]{ combine texture }
+        //     SetTexture[_EmissiveMap]{ combine primary lerp(texture) previous }
+        // }
 
-        LOD 200
+        // LOD 200
 
         CGPROGRAM
 
@@ -42,6 +46,8 @@ Shader "pixelspaghetti/Lava"
         float _EmissionPower;
         sampler2D _DisplacementTex;
         float _MaxDisplacement;
+        bool _GenerateWaves;
+        float _TimeInput;
 
         struct Input {
             float2 uv_MainTex;
@@ -51,6 +57,8 @@ Shader "pixelspaghetti/Lava"
 
         void vert( inout appdata_full v, out Input o)
         {
+            if (_GenerateWaves == 1)
+            {
             // Make lava wavy
             UNITY_INITIALIZE_OUTPUT(Input,o);
             o.noise = 0;
@@ -62,17 +70,21 @@ Shader "pixelspaghetti/Lava"
             float displacement = dot(float3(0.21, 0.72, 0.07), dispTexColor.rgb) * _MaxDisplacement;
             
             // displace vertices along surface normal vector
-            float4 newVertexPos = v.vertex + float4(v.normal * displacement * cos(_Time.y) / 5 , 0.0);
-            newVertexPos.x = frac(newVertexPos.x  +_Time.y * 0.05); 
-            v.vertex = newVertexPos;
+            float4 newVertexPos = v.vertex + float4(v.normal * displacement * (cos(_Time.y) / 12 + 0.3) , 0.0);
+             // newVertexPos.x = frac(newVertexPos.x  +_Time.y * 0.05); 
+            v.vertex.y = newVertexPos.y;
+            }
         }
 
         void surf (Input IN, inout SurfaceOutput o) {
-            half4 c = tex2D(_MainTex, IN.uv_MainTex);
-            half4 e = tex2D(_EmissiveMap, IN.uv_EmissiveMap) * _EmissionColor;
+            float2 uv = float2(IN.uv_MainTex.x + _Time.y * 0.05, IN.uv_MainTex.y);
+            half4 c = tex2D(_MainTex, uv);
+            half4 e = tex2D(_EmissiveMap, uv) * _EmissionColor;
             o.Albedo = c.rgb += e.rgb;
 
-            float fadingEmission = _EmissionPower *= cos(_Time.y * 0.6f) + 1;
+            //float fadingEmission = _EmissionPower *= cos(_TimeInput * 0.6f) + 1;
+            float fadingEmission = _EmissionPower* _TimeInput;
+
             o.Emission = e.rgb * fadingEmission;
         }
         ENDCG
